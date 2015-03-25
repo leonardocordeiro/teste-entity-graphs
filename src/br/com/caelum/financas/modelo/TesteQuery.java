@@ -17,7 +17,27 @@ public class TesteQuery {
 				.createEntityManagerFactory("notas");
 		EntityManager manager = factory.createEntityManager();
 
-		manager.getTransaction().begin();
+		
+		TypedQuery<Conta> query = manager.createQuery("select c from Conta c", Conta.class);
+		query.setHint("javax.persistence.loadgraph", manager.getEntityGraph("ContaComMovimentacao"));
+		
+		List<Conta> contas = query.getResultList();
+
+		manager.close();
+		factory.close();
+		
+		System.out.println("EM fechado");
+		
+		for (Conta conta : contas) {
+			System.out.println("Gerente: " + conta.getGerente().getNome());
+			for(Movimentacao m : conta.getMovimentacoes()) { 
+				System.out.println(m.getValor());
+			}
+			
+		}
+		
+		
+		
 
 		/*
 		TypedQuery<Movimentacao> query = manager
@@ -25,7 +45,6 @@ public class TesteQuery {
 						"select m from Movimentacao m where m.conta.titular = :titular",
 						Movimentacao.class).setParameter("titular",
 						"foo");
-		*/
 		
 		TypedQuery<Conta> query = manager.createQuery("select c from Conta c", Conta.class);
 		query.setHint("javax.persistence.fetchgraph", manager.getEntityGraph("ContaComMovimentacao"));
@@ -43,6 +62,8 @@ public class TesteQuery {
 			}
 			
 		}
+		
+		 */
 		
 	}
 
